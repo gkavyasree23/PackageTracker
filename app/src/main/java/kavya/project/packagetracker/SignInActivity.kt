@@ -26,7 +26,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
@@ -36,7 +35,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -51,35 +49,29 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-class SignupActivity : ComponentActivity() {
+class SignInActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            RegisterScreen()
+            LoginScreen()
         }
     }
 }
 
+
 @Composable
-fun RegisterScreen() {
-    var fullName by remember { mutableStateOf("") }
+fun LoginScreen() {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
-
-    val genderOptions = listOf("Male", "Female", "Other")
-    var selectedGender by remember { mutableStateOf("Male") }
-
     val context = LocalContext.current as Activity
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5)) // Soft background
+            .background(color = Color(0xFFF5F5F5)) // Light background
     ) {
         Column(
             modifier = Modifier
@@ -106,71 +98,18 @@ fun RegisterScreen() {
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Hey,\nRegister Now!",
+                text = "Welcome Back!",
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
-                ),
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Full Name Input
-            Card(
-                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = fullName,
-                    onValueChange = { fullName = it },
-                    label = { Text("Full Name") },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.AccountCircle,
-                            contentDescription = "Full Name Icon"
-                        )
-                    },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
                 )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Gender Selection
-            Text(
-                text = "Select Gender",
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
-                color = Color.Gray,
-                modifier = Modifier.align(Alignment.Start)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                genderOptions.forEach { gender ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(end = 12.dp)
-                    ) {
-                        RadioButton(
-                            selected = (gender == selectedGender),
-                            onClick = { selectedGender = gender }
-                        )
-                        Text(
-                            text = gender,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Login to your account",
+                style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray),
+                modifier = Modifier.padding(top = 4.dp, bottom = 32.dp)
+            )
 
             // Email Input
             Card(
@@ -179,6 +118,9 @@ fun RegisterScreen() {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 OutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White),
                     value = email,
                     onValueChange = { email = it },
                     label = { Text("Email Address") },
@@ -189,7 +131,6 @@ fun RegisterScreen() {
                         )
                     },
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
                 )
             }
 
@@ -202,6 +143,9 @@ fun RegisterScreen() {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 OutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White),
                     value = password,
                     onValueChange = { password = it },
                     label = { Text("Password") },
@@ -212,77 +156,37 @@ fun RegisterScreen() {
                         )
                     },
                     singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth()
+                    visualTransformation = PasswordVisualTransformation()
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // Confirm Password Input
-            Card(
-                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = confirmPassword,
-                    onValueChange = { confirmPassword = it },
-                    label = { Text("Confirm Password") },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Lock,
-                            contentDescription = "Confirm Password Icon"
-                        )
-                    },
-                    singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Register Button
+            // Login Button
             Button(
                 onClick = {
-                    if (fullName.isEmpty()) {
-                        Toast.makeText(context, "Enter FullName", Toast.LENGTH_SHORT).show()
-                        return@Button
-                    }
-                    if (email.isEmpty()) {
-                        Toast.makeText(context, "Enter Email", Toast.LENGTH_SHORT).show()
-                        return@Button
-                    }
-                    if (password.isEmpty()) {
-                        Toast.makeText(context, "Enter Password", Toast.LENGTH_SHORT).show()
-                        return@Button
-                    }
-                    if (password != confirmPassword) {
-                        Toast.makeText(context, "Passwords don't match", Toast.LENGTH_SHORT).show()
-                        return@Button
-                    }
-
 
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E88E5))
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF1E88E5) // Nice blue
+                )
             ) {
-                Text("Register", fontSize = 18.sp)
+                Text("Login", fontSize = 18.sp)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Login Link
+            // Register Now
             Row(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Already have an account?",
+                    text = "Don't have an account?",
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray
                 )
@@ -290,13 +194,13 @@ fun RegisterScreen() {
                 Spacer(modifier = Modifier.width(4.dp))
 
                 Text(
-                    text = "Login",
+                    text = "Register",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF1E88E5)
                     ),
                     modifier = Modifier.clickable {
-                        context.startActivity(Intent(context, SignInActivity::class.java))
+                        context.startActivity(Intent(context, SignupActivity::class.java))
                         context.finish()
                     }
                 )

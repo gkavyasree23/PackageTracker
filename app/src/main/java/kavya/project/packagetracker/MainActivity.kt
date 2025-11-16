@@ -56,8 +56,8 @@ fun PackageTrackerStartScreen() {
     LaunchedEffect(Unit) {
         delay(3000)
 
-            context.startActivity(Intent(context, SignInActivity::class.java))
-            context.finish()
+        context.startActivity(Intent(context, SignInActivity::class.java))
+        context.finish()
 
     }
 

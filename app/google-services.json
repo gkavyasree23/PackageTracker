@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "513527700406",
+    "project_id": "packagetracker-a75e6",
+    "storage_bucket": "packagetracker-a75e6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:513527700406:android:091fd3902ea934680c3f17",
+        "android_client_info": {
+          "package_name": "kavya.project.packagetracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjBF0x-q_bEBtx-DiwZ9xxlly-bD6romk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -3,10 +3,12 @@ package kavya.project.packagetracker
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,6 +29,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
@@ -54,8 +57,13 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.database.FirebaseDatabase
+import java.time.LocalDate
+import java.time.Period
+import java.time.format.DateTimeFormatter
 
 class SignupActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -64,12 +72,14 @@ class SignupActivity : ComponentActivity() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RegisterScreen() {
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    var dob by remember { mutableStateOf("") }
 
     val genderOptions = listOf("Male", "Female", "Other")
     var selectedGender by remember { mutableStateOf("Male") }
@@ -79,7 +89,7 @@ fun RegisterScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5)) // Soft background
+            .background(Color(0xFFF5F5F5))
     ) {
         Column(
             modifier = Modifier
@@ -91,7 +101,6 @@ fun RegisterScreen() {
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            // App Logo
             Image(
                 painter = painterResource(id = R.drawable.ic_package_tracking),
                 contentDescription = "App Logo",
@@ -116,7 +125,7 @@ fun RegisterScreen() {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Full Name Input
+            // Full Name
             Card(
                 elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                 shape = RoundedCornerShape(12.dp),
@@ -127,19 +136,37 @@ fun RegisterScreen() {
                     onValueChange = { fullName = it },
                     label = { Text("Full Name") },
                     leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.AccountCircle,
-                            contentDescription = "Full Name Icon"
-                        )
+                        Icon(Icons.Default.AccountCircle, contentDescription = null)
                     },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
                 )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Gender Selection
+            // DOB Field — dd-mm-yyyy
+            Card(
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = dob,
+                    onValueChange = { dob = it },
+                    label = { Text("Date of Birth (dd-mm-yyyy)") },
+                    leadingIcon = {
+                        Icon(Icons.Default.DateRange, contentDescription = "DOB Icon")
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    placeholder = { Text("dd-mm-yyyy") }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Gender selection
             Text(
                 text = "Select Gender",
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
@@ -149,10 +176,7 @@ fun RegisterScreen() {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Row(modifier = Modifier.fillMaxWidth()) {
                 genderOptions.forEach { gender ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -162,17 +186,14 @@ fun RegisterScreen() {
                             selected = (gender == selectedGender),
                             onClick = { selectedGender = gender }
                         )
-                        Text(
-                            text = gender,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                        Text(text = gender)
                     }
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Email Input
+            // Email
             Card(
                 elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                 shape = RoundedCornerShape(12.dp),
@@ -183,19 +204,16 @@ fun RegisterScreen() {
                     onValueChange = { email = it },
                     label = { Text("Email Address") },
                     leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Email,
-                            contentDescription = "Email Icon"
-                        )
+                        Icon(Icons.Default.Email, contentDescription = null)
                     },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
                 )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Password Input
+            // Password
             Card(
                 elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                 shape = RoundedCornerShape(12.dp),
@@ -206,20 +224,17 @@ fun RegisterScreen() {
                     onValueChange = { password = it },
                     label = { Text("Password") },
                     leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Lock,
-                            contentDescription = "Password Icon"
-                        )
+                        Icon(Icons.Default.Lock, contentDescription = null)
                     },
-                    singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
                 )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Confirm Password Input
+            // Confirm Password
             Card(
                 elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                 shape = RoundedCornerShape(12.dp),
@@ -230,14 +245,11 @@ fun RegisterScreen() {
                     onValueChange = { confirmPassword = it },
                     label = { Text("Confirm Password") },
                     leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Lock,
-                            contentDescription = "Confirm Password Icon"
-                        )
+                        Icon(Icons.Default.Lock, contentDescription = null)
                     },
-                    singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
                 )
             }
 
@@ -246,23 +258,97 @@ fun RegisterScreen() {
             // Register Button
             Button(
                 onClick = {
+
+                    // Validate Full Name
                     if (fullName.isEmpty()) {
-                        Toast.makeText(context, "Enter FullName", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Enter Full Name", Toast.LENGTH_SHORT).show()
                         return@Button
                     }
+
+                    // Validate DOB empty
+                    if (dob.isEmpty()) {
+                        Toast.makeText(context, "Enter Date of Birth", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+
+                    // Validate DOB format dd-mm-yyyy
+                    val dobRegex = Regex("^\\d{2}-\\d{2}-\\d{4}$")
+                    if (!dob.matches(dobRegex)) {
+                        Toast.makeText(context, "Invalid DOB format. Use dd-mm-yyyy", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+
+                    // Validate correct calendar date
+                    try {
+                        val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+                        val date = LocalDate.parse(dob, formatter)
+
+                        // Age must be at least 13 (optional)
+                        val age = Period.between(date, LocalDate.now()).years
+                        if (age < 13) {
+                            Toast.makeText(context, "You must be at least 13 years old", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "Enter a valid calendar date", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+
+                    // Validate email
                     if (email.isEmpty()) {
                         Toast.makeText(context, "Enter Email", Toast.LENGTH_SHORT).show()
                         return@Button
                     }
+
+                    // Validate password
                     if (password.isEmpty()) {
                         Toast.makeText(context, "Enter Password", Toast.LENGTH_SHORT).show()
                         return@Button
                     }
+
                     if (password != confirmPassword) {
-                        Toast.makeText(context, "Passwords don't match", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
                         return@Button
                     }
 
+                    val userData = UserData(
+                        name = fullName,
+                        email = email,
+                        dob = dob,
+                        password = password
+                    )
+
+
+                    val db = FirebaseDatabase.getInstance()
+                    val ref = db.getReference("SignedUpUsers")
+                    ref.child(userData.email.replace(".", ",")).setValue(userData)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                Toast.makeText(context, "Registration Successful", Toast.LENGTH_SHORT).show()
+
+                                context.startActivity(
+                                    Intent(
+                                        context,
+                                        SignInActivity::class.java
+                                    )
+                                )
+                                (context).finish()
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "User Registration Failed: ${task.exception?.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                        .addOnFailureListener { exception ->
+                            Toast.makeText(
+                                context,
+                                "User Registration Failed: ${exception.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
 
                 },
                 modifier = Modifier
@@ -276,25 +362,16 @@ fun RegisterScreen() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Login Link
+            // Login link
             Row(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Already have an account?",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
-                )
-
-                Spacer(modifier = Modifier.width(4.dp))
-
+                Text("Already have an account?", color = Color.Gray)
+                Spacer(Modifier.width(4.dp))
                 Text(
                     text = "Login",
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1E88E5)
-                    ),
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1E88E5),
                     modifier = Modifier.clickable {
                         context.startActivity(Intent(context, SignInActivity::class.java))
                         context.finish()
@@ -304,3 +381,12 @@ fun RegisterScreen() {
         }
     }
 }
+
+
+data class UserData
+    (
+    var name: String = "",
+    var dob: String ="",
+    var email: String ="",
+    var password: String ="",
+)

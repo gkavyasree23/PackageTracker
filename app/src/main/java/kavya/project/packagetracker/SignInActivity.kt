@@ -51,6 +51,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.database.FirebaseDatabase
+import kotlin.jvm.java
 
 class SignInActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -165,7 +167,47 @@ fun LoginScreen() {
             // Login Button
             Button(
                 onClick = {
+                    when {
+                        email.isEmpty() -> {
+                            Toast.makeText(context, " Please Enter Mail", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
 
+                        password.isEmpty() -> {
+                            Toast.makeText(context, " Please Enter Password", Toast.LENGTH_SHORT)
+                                .show()
+                            return@Button
+                        }
+
+                        else -> {
+
+                            val database = FirebaseDatabase.getInstance()
+                            val databaseReference = database.reference
+
+                            val sanitizedEmail = email.replace(".", ",")
+
+                            databaseReference.child("SignedUpUsers").child(sanitizedEmail).get()
+                                .addOnSuccessListener { snapshot ->
+                                    if (snapshot.exists()) {
+                                        val chefData = snapshot.getValue(UserData::class.java)
+                                        chefData?.let {
+
+                                            if (password == it.password) {
+                                                Toast.makeText(context, "Login Successfull", Toast.LENGTH_SHORT).show()
+                                            }
+                                            else{
+                                                Toast.makeText(context,"Incorrect Credentials",Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
+                                    } else {
+                                        Toast.makeText(context,"No User Found",Toast.LENGTH_SHORT).show()
+                                    }
+                                }.addOnFailureListener { exception ->
+                                    println("Error retrieving data: ${exception.message}")
+                                }
+                        }
+
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -176,6 +218,34 @@ fun LoginScreen() {
                 )
             ) {
                 Text("Login", fontSize = 18.sp)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Register Now
+            Row(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Forgot Password?",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
+                )
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                Text(
+                    text = "Reset Now",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF1E88E5)
+                    ),
+                    modifier = Modifier.clickable {
+                        context.startActivity(Intent(context, ForgotPasswordActivity::class.java))
+                        context.finish()
+                    }
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))

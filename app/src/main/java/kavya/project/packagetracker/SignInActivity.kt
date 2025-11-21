@@ -194,6 +194,8 @@ fun LoginScreen() {
 
                                             if (password == it.password) {
                                                 Toast.makeText(context, "Login Successfull", Toast.LENGTH_SHORT).show()
+                                                context.startActivity(Intent(context, HomeActivity::class.java))
+                                                context.finish()
                                             }
                                             else{
                                                 Toast.makeText(context,"Incorrect Credentials",Toast.LENGTH_SHORT).show()

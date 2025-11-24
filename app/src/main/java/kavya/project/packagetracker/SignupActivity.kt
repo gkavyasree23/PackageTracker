@@ -2,6 +2,8 @@ package kavya.project.packagetracker
 
 
 import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -55,6 +57,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.database.FirebaseDatabase
@@ -84,7 +87,7 @@ fun RegisterScreen() {
     val genderOptions = listOf("Male", "Female", "Other")
     var selectedGender by remember { mutableStateOf("Male") }
 
-    val context = LocalContext.current as Activity
+    val context = LocalContext.current.findActivity()
 
     Box(
         modifier = Modifier
@@ -327,7 +330,7 @@ fun RegisterScreen() {
                             if (task.isSuccessful) {
                                 Toast.makeText(context, "Registration Successful", Toast.LENGTH_SHORT).show()
 
-                                context.startActivity(
+                                context!!.startActivity(
                                     Intent(
                                         context,
                                         SignInActivity::class.java
@@ -373,7 +376,7 @@ fun RegisterScreen() {
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF1E88E5),
                     modifier = Modifier.clickable {
-                        context.startActivity(Intent(context, SignInActivity::class.java))
+                        context!!.startActivity(Intent(context, SignInActivity::class.java))
                         context.finish()
                     }
                 )
@@ -390,3 +393,16 @@ data class UserData
     var email: String ="",
     var password: String ="",
 )
+
+fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun RegisterScreenPreview() {
+    RegisterScreen()
+}

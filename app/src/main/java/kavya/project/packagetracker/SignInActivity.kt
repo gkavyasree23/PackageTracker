@@ -49,6 +49,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.database.FirebaseDatabase
@@ -68,7 +69,7 @@ class SignInActivity : ComponentActivity() {
 fun LoginScreen() {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    val context = LocalContext.current as Activity
+    val context = LocalContext.current.findActivity()
 
     Box(
         modifier = Modifier
@@ -194,7 +195,7 @@ fun LoginScreen() {
 
                                             if (password == it.password) {
                                                 Toast.makeText(context, "Login Successfull", Toast.LENGTH_SHORT).show()
-                                                context.startActivity(Intent(context, HomeActivity::class.java))
+                                                context!!.startActivity(Intent(context, HomeActivity::class.java))
                                                 context.finish()
                                             }
                                             else{
@@ -244,7 +245,7 @@ fun LoginScreen() {
                         color = Color(0xFF1E88E5)
                     ),
                     modifier = Modifier.clickable {
-                        context.startActivity(Intent(context, ForgotPasswordActivity::class.java))
+                        context!!.startActivity(Intent(context, ForgotPasswordActivity::class.java))
                         context.finish()
                     }
                 )
@@ -272,11 +273,17 @@ fun LoginScreen() {
                         color = Color(0xFF1E88E5)
                     ),
                     modifier = Modifier.clickable {
-                        context.startActivity(Intent(context, SignupActivity::class.java))
+                        context!!.startActivity(Intent(context, SignupActivity::class.java))
                         context.finish()
                     }
                 )
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LoginScreenPreview() {
+    LoginScreen()
 }

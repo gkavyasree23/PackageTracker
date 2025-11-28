@@ -1,8 +1,5 @@
 package kavya.project.packagetracker
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -46,21 +43,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 
-class HomeActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
 
-        setContent {
-            PackageHomeScreen()
-        }
-    }
-}
-
-// -------------------- DATA MODEL ----------------------
+//this is the old home screen code
 
 data class PackageItem(
     val id: Int,
@@ -73,13 +63,13 @@ data class PackageItem(
 
 @Preview(showBackground = true)
 @Composable
-fun PackageHomeScreenPreview() {
-    PackageHomeScreen()
+fun PackageHomeScreenOldPreview() {
+    PackageHomeScreenOld(navController = NavHostController(LocalContext.current))
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PackageHomeScreen() {
+fun PackageHomeScreenOld(navController: NavHostController) {
 
     val packages = remember {
         mutableStateOf(
@@ -108,7 +98,9 @@ fun PackageHomeScreen() {
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { }) {
+            FloatingActionButton(onClick = {
+                navController.navigate(AppRoutes.TrackPackage.route)
+            }) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }
         }

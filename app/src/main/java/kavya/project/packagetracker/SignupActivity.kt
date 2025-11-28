@@ -4,12 +4,8 @@ package kavya.project.packagetracker
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
-import android.content.Intent
 import android.os.Build
-import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -60,24 +56,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.google.firebase.database.FirebaseDatabase
 import java.time.LocalDate
 import java.time.Period
 import java.time.format.DateTimeFormatter
 
-class SignupActivity : ComponentActivity() {
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            RegisterScreen()
-        }
-    }
-}
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(navController: NavHostController) {
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -330,13 +319,10 @@ fun RegisterScreen() {
                             if (task.isSuccessful) {
                                 Toast.makeText(context, "Registration Successful", Toast.LENGTH_SHORT).show()
 
-                                context!!.startActivity(
-                                    Intent(
-                                        context,
-                                        SignInActivity::class.java
-                                    )
-                                )
-                                (context).finish()
+
+                                navController.navigate(AppRoutes.Login.route){
+                                    popUpTo(AppRoutes.Register.route) { inclusive = true }
+                                }
                             } else {
                                 Toast.makeText(
                                     context,
@@ -376,8 +362,11 @@ fun RegisterScreen() {
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF1E88E5),
                     modifier = Modifier.clickable {
-                        context!!.startActivity(Intent(context, SignInActivity::class.java))
-                        context.finish()
+
+                        navController.navigate(AppRoutes.Login.route){
+                            popUpTo(AppRoutes.Register.route) { inclusive = true }
+                        }
+
                     }
                 )
             }
@@ -401,8 +390,9 @@ fun Context.findActivity(): Activity? = when (this) {
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun RegisterScreenPreview() {
-    RegisterScreen()
+    RegisterScreen(navController = NavHostController(LocalContext.current))
 }

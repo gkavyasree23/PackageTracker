@@ -1,12 +1,12 @@
 package kavya.project.packagetracker
 
 
-import android.app.Activity
-import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -36,6 +36,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
@@ -43,22 +47,73 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            PackageTrackerStartScreen()
+            MyAppNavGraph()
         }
     }
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun PackageTrackerStartScreen() {
+fun MyAppNavGraph() {
+    val navController = rememberNavController()
 
-    val context = LocalContext.current as Activity
+    NavHost(
+        navController = navController,
+        startDestination = AppRoutes.Splash.route
+    ) {
+        composable(AppRoutes.Splash.route) {
+            PackageTrackerStartScreen(navController = navController)
+        }
+
+        composable(AppRoutes.Login.route) {
+            LoginScreen(navController = navController)
+        }
+
+        composable(AppRoutes.Register.route) {
+            RegisterScreen(navController = navController)
+        }
+
+        composable(AppRoutes.ForgotPassword.route) {
+            ResetPasswordScreen(navController = navController)
+        }
+
+        composable(AppRoutes.Home.route) {
+            PackageHomeScreen(navController = navController)
+        }
+
+        composable(AppRoutes.TrackPackage.route) {
+            TrackPackageScreen(navController = navController)
+        }
+
+
+    }
+
+}
+
+
+@Composable
+fun PackageTrackerStartScreen(navController: NavController) {
+
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         delay(3000)
 
-        context.startActivity(Intent(context, SignInActivity::class.java))
-        context.finish()
+        if(UserPrefs.checkLoginStatus(context))
+        {
+            navController.navigate(AppRoutes.Home.route) {
+                popUpTo(AppRoutes.Splash.route) {
+                    inclusive = true
+                }
+            }
+        }else{
+            navController.navigate(AppRoutes.Login.route) {
+                popUpTo(AppRoutes.Splash.route) {
+                    inclusive = true
+                }
+            }
+        }
 
     }
 

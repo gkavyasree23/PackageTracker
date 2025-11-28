@@ -1,12 +1,7 @@
 package kavya.project.packagetracker
 
 
-import android.app.Activity
-import android.content.Intent
-import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -52,24 +47,19 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.google.firebase.database.FirebaseDatabase
-import kotlin.jvm.java
-
-class SignInActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            LoginScreen()
-        }
-    }
-}
 
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navController: NavHostController) {
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
     val context = LocalContext.current.findActivity()
+
+    val context1=LocalContext.current
 
     Box(
         modifier = Modifier
@@ -194,9 +184,15 @@ fun LoginScreen() {
                                         chefData?.let {
 
                                             if (password == it.password) {
+
+                                                UserPrefs.markLoginStatus(context1, true)
+                                                UserPrefs.saveReporterEmail(context1, email = email)
+                                                UserPrefs.saveReporterName(context1, it.name)
+
                                                 Toast.makeText(context, "Login Successfull", Toast.LENGTH_SHORT).show()
-                                                context!!.startActivity(Intent(context, HomeActivity::class.java))
-                                                context.finish()
+                                                navController.navigate(AppRoutes.Home.route){
+                                                    popUpTo(AppRoutes.Login.route) { inclusive = true }
+                                                }
                                             }
                                             else{
                                                 Toast.makeText(context,"Incorrect Credentials",Toast.LENGTH_SHORT).show()
@@ -245,8 +241,7 @@ fun LoginScreen() {
                         color = Color(0xFF1E88E5)
                     ),
                     modifier = Modifier.clickable {
-                        context!!.startActivity(Intent(context, ForgotPasswordActivity::class.java))
-                        context.finish()
+                        navController.navigate(AppRoutes.ForgotPassword.route)
                     }
                 )
             }
@@ -273,8 +268,9 @@ fun LoginScreen() {
                         color = Color(0xFF1E88E5)
                     ),
                     modifier = Modifier.clickable {
-                        context!!.startActivity(Intent(context, SignupActivity::class.java))
-                        context.finish()
+
+                        navController.navigate(AppRoutes.Register.route)
+
                     }
                 )
             }
@@ -285,5 +281,5 @@ fun LoginScreen() {
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen()
+    LoginScreen(navController = NavHostController(LocalContext.current))
 }

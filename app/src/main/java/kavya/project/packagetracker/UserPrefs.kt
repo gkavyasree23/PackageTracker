@@ -1,12 +1,6 @@
 package kavya.project.packagetracker
 
 import android.content.Context
-import kavya.project.packagetracker.UserPrefs.KEY_IS_USER_LOGGED_IN
-import kavya.project.packagetracker.UserPrefs.KEY_REPORTER_EMAIL
-import kavya.project.packagetracker.UserPrefs.KEY_REPORTER_NAME
-import kavya.project.packagetracker.UserPrefs.PREFS_NAME
-
-
 
 
 object UserPrefs {

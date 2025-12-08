@@ -8,5 +8,6 @@ sealed class AppRoutes(val route: String) {
     object ForgotPassword : AppRoutes("forgot_password")
 
     object TrackPackage : AppRoutes("track_package")
+    object SavedPackages : AppRoutes("saved_package")
 
 }

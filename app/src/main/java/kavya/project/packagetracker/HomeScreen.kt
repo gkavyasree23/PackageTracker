@@ -3,6 +3,7 @@ package kavya.project.packagetracker
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -153,7 +154,7 @@ fun PackageHomeScreen(
                             Toast.makeText(context, "Enter Tracking Number", Toast.LENGTH_SHORT)
                                 .show()
                         } else {
-                            PackageData.trackingNumber=trackingNo
+                            PackageData.trackingNumber = trackingNo
                             navController.navigate(AppRoutes.TrackPackage.route)
                         }
                     },
@@ -180,7 +181,10 @@ fun PackageHomeScreen(
         }
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = "Tracking history",
+            modifier = Modifier.clickable {
+                navController.navigate(AppRoutes.SavedPackages.route)
+            },
+            text = "Manage Tracking",
             style = MaterialTheme.typography.titleMedium.copy(
                 fontWeight = FontWeight.Bold
             )
@@ -188,19 +192,29 @@ fun PackageHomeScreen(
         )
         Spacer(modifier = Modifier.height(12.dp))
 
-        TrackingItemCard(R.drawable.ic_package_tracking, "UKPKG1001", "Order is Shipped")
-        TrackingItemCard(R.drawable.ic_package_tracking, "UKPKG1002", "Order reached at hub")
+        TrackingItemCard(
+            R.drawable.ic_package_tracking,
+            "Saved Packages",
+            "See list of your saved packages",
+            onClick = {
+                navController.navigate(AppRoutes.SavedPackages.route)
+            }
+        )
+//        TrackingItemCard(R.drawable.ic_package_tracking, "UKPKG1002", "Order reached at hub")
 
 
     }
 }
 
 @Composable
-fun TrackingItemCard(imageid: Int, trackingid: String, orderstatus: String) {
+fun TrackingItemCard(imageid: Int, trackingid: String, orderstatus: String, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 4.dp)
+            .clickable {
+                onClick()
+            },
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFFFE48A) // Yellow background INSIDE the Card

@@ -86,6 +86,10 @@ fun MyAppNavGraph() {
             TrackPackageScreen(navController = navController)
         }
 
+        composable(AppRoutes.SavedPackages.route) {
+            SavedPackagesScreen(navController = navController)
+        }
+
 
     }
 

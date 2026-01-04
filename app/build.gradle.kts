@@ -10,11 +10,11 @@ plugins {
 
 
 android {
-    namespace = "kavya.project.packagetracker"
+    namespace = "project.kavyasrees3537153.packagetracker"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "kavya.project.packagetracker"
+        applicationId = "project.kavyasrees3537153.packagetracker"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -83,5 +83,8 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
 
     implementation("androidx.compose.material:material-icons-extended:1.6.0")
+
+    implementation("com.google.maps.android:maps-compose:4.3.3")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
 
 }
